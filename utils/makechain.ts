@@ -13,16 +13,16 @@ Follow Up Input: {question}
 Standalone question:`);
 
 const QA_PROMPT = PromptTemplate.fromTemplate(
-  `You are an AI assistant providing helpful advice. You are given the following extracted parts of a long document and a question. Provide a conversational answer based on the context provided.
-You should only provide hyperlinks that reference the context below. Do NOT make up hyperlinks.
-If you can't find the answer in the context below, just say "Hmm, I'm not sure." Don't try to make up an answer.
-If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
+  `Eres un asistente de IA que brinda consejos útiles. Se le dan las siguientes partes extraídas de un documento extenso y una pregunta. Proporcione una respuesta conversacional basada en el contexto proporcionado.
+  Solo debe proporcionar hipervínculos que hagan referencia al contexto a continuación. NO inventes hipervínculos.
+  Si no puede encontrar la respuesta en el contexto a continuación, simplemente diga "Hmm, no estoy seguro". No intentes inventar una respuesta.
+  Si la pregunta no está relacionada con el contexto, responda cortésmente que está sintonizado para responder solo preguntas relacionadas con el contexto.
 
 Question: {question}
 =========
 {context}
 =========
-Answer in Markdown:`,
+Responde en Markdown:`,
 );
 
 export const makeChain = (
@@ -36,16 +36,17 @@ export const makeChain = (
   const docChain = loadQAChain(
     new OpenAIChat({
       temperature: 0,
-      modelName: 'gpt-4', //change this to older versions (e.g. gpt-3.5-turbo) if you don't have access to gpt-4
-      streaming: Boolean(onTokenStream),
-      callbackManager: onTokenStream
-        ? CallbackManager.fromHandlers({
-            async handleLLMNewToken(token) {
-              onTokenStream(token);
-              console.log(token);
-            },
-          })
-        : undefined,
+      modelName: 'gpt-3.5-turbo', //change this to older versions (e.g. gpt-3.5-turbo) if you don't have access to gpt-4
+      streaming: false,
+      //streaming: Boolean(onTokenStream),
+      // callbackManager: onTokenStream
+      //   ? CallbackManager.fromHandlers({
+      //       async handleLLMNewToken(token) {
+      //         onTokenStream(token);
+      //         // console.log(token);
+      //       },
+      //     })
+      //   : undefined,
     }),
     { prompt: QA_PROMPT },
   );
@@ -54,7 +55,7 @@ export const makeChain = (
     vectorstore,
     combineDocumentsChain: docChain,
     questionGeneratorChain: questionGenerator,
-    returnSourceDocuments: true,
-    k: 2, //number of source documents to return
+    returnSourceDocuments: false,
+    k: 1, //number of source documents to return
   });
 };

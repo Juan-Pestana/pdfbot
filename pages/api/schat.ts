@@ -29,17 +29,17 @@ export default async function handler(
     },
   );
 
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache, no-transform',
-    Connection: 'keep-alive',
-  });
+  //   res.writeHead(200, {
+  //     'Content-Type': 'application/json',
+  //     'Cache-Control': 'no-cache, no-transform',
+  //     Connection: 'keep-alive',
+  //   });
 
   const sendData = (data: string) => {
     res.write(`data: ${data}\n\n`);
   };
 
-  sendData(JSON.stringify({ data: '' }));
+  //sendData(JSON.stringify({ data: '' }));
 
   //create chain
   const chain = makeChain(vectorStore, (token: string) => {
@@ -52,13 +52,11 @@ export default async function handler(
       question: sanitizedQuestion,
       chat_history: history || [],
     });
-
+    //console.log('esta es la respuesta', response);
     //console.log('response', response);
-    sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
+    // sendData(JSON.stringify({ sourceDocs: response.sourceDocuments }));
+    return res.status(200).json(response);
   } catch (error) {
     console.log('error', error);
-  } finally {
-    sendData('[DONE]');
-    res.end();
   }
 }
