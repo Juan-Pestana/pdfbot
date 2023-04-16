@@ -4,11 +4,9 @@ import { PineconeStore } from 'langchain/vectorstores';
 import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
+import withAllowCORS from '@/middleware/withAllowCORS';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { question, history } = req.body;
 
   if (!question) {
@@ -59,4 +57,6 @@ export default async function handler(
   } catch (error) {
     console.log('error', error);
   }
-}
+};
+
+export default withAllowCORS(handler);
